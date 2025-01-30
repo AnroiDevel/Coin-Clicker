@@ -2,6 +2,9 @@ import { GameState } from './core/game-state.js'
 import { DOM } from './core/dom-manager.js'
 import { Achievements } from './features/achievements.js'
 import { Animations } from './features/animations.js'
+import { Upgrades } from './features/upgrades.js'
+
+Upgrades.init()
 
 class Game {
 	static init() {

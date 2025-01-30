@@ -1,3 +1,5 @@
+import { EventBus } from '../core/event-bus.js'
+
 export const GameState = {
 	state: {
 		score: 0,
@@ -84,5 +86,15 @@ export const GameState = {
 				{ ...val, ...(loaded?.[key] || {}) },
 			])
 		)
+	},
+
+	updateScore(amount) {
+		this.state.score += amount
+		console.log(`Очки обновлены: ${this.state.score}`)
+		EventBus.dispatchEvent(
+			new CustomEvent('scoreUpdated', { detail: this.state.score })
+		)
+		EventBus.dispatchEvent(new Event('updateShop'))
+		this.save()
 	},
 }
