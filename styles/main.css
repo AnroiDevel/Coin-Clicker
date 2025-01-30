@@ -1,0 +1,403 @@
+/* ======= Глобальные стили ======= */
+:root {
+	--bg-color: #f0d9b5;
+	--text-color: #000;
+	--white-bg: rgba(255, 255, 255, 0.8);
+	--highlight-color: #ffd700;
+	--disabled-color: #cccccc;
+	--danger-color: #ff4444;
+	--danger-hover: #cc0000;
+	--shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+body {
+	margin: 0;
+	padding: 20px;
+	font-family: Arial, sans-serif;
+	background: var(--bg-color);
+	user-select: none;
+}
+
+.floating-text {
+	position: absolute;
+	font-size: 1.2em;
+	font-weight: bold;
+	color: gold;
+	animation: floatUp 1s ease-out forwards;
+	pointer-events: none;
+}
+
+.purchase-effect {
+	animation: pulse 0.5s ease;
+}
+
+.error-shake {
+	animation: shake 0.5s ease;
+}
+
+@keyframes pulse {
+	50% {
+		transform: scale(1.1);
+	}
+}
+
+@keyframes shake {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+	25% {
+		transform: translateX(-5px);
+	}
+	75% {
+		transform: translateX(5px);
+	}
+}
+
+@keyframes floatUp {
+	0% {
+		transform: translateY(0);
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(-50px);
+		opacity: 0;
+	}
+}
+
+.ui-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	pointer-events: none; /* Клики проходят сквозь контейнер */
+	display: grid;
+	grid-template:
+		'score      .         achievements' auto
+		'.          .         .' 1fr
+		'reset-btn  shop      shop' auto
+		/ 1fr 2fr 1fr;
+	gap: 10px;
+	padding: 10px;
+	z-index: 1000;
+}
+
+/* ======= Контейнер счета ======= */
+.score-container {
+	position: fixed;
+	top: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 24px;
+	font-weight: bold;
+	color: var(--text-color);
+	background-color: var(--white-bg);
+	padding: 10px 20px;
+	border-radius: 10px;
+	box-shadow: var(--shadow);
+	z-index: 1002;
+	grid-area: score;
+	justify-self: center;
+}
+
+/* Анимация увеличения счета */
+@keyframes scorePop {
+	50% {
+		transform: translateX(-50%) scale(1.1);
+	}
+}
+
+.score-container.pop {
+	animation: scorePop 0.2s ease;
+}
+
+/* ======= Монета ======= */
+.coin-container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.coin {
+	width: 150px;
+	height: 150px;
+	cursor: pointer;
+	transition: transform 0.1s ease;
+	animation: rotate 8s infinite linear;
+	transform-origin: center;
+	pointer-events: auto;
+	outline: none; /* Убираем контур фокуса */
+	-webkit-tap-highlight-color: transparent; /* Убираем фон при касании на мобильных устройствах */
+	user-select: none; /* Запрещаем выделение текста */
+	-webkit-user-drag: none; /* Запрещаем перетаскивание изображения */
+}
+
+.coin:hover {
+	transform: scale(1.1);
+}
+
+/* Анимация уменьшения */
+@keyframes shrink {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.9);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.coin-shrink {
+	animation: shrink 0.1s ease;
+}
+
+/* Анимация вращения */
+@keyframes rotate {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.achievements-container {
+	position: fixed;
+	top: 80px; /* Размещаем под счетом */
+	right: 20px;
+	width: 280px;
+	max-height: 60vh;
+	z-index: 1001; /* Выше магазина (z-index: 1000) */
+	background: var(--white-bg);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
+	padding: 15px;
+	overflow-y: auto;
+}
+
+.achievement {
+	margin: 10px 0;
+	padding: 10px;
+	border-radius: 8px;
+	background: #f8f8f8;
+	opacity: 0.5;
+	transition: opacity 0.3s ease;
+}
+
+.achievement.unlocked {
+	opacity: 1;
+	background: var(--highlight-color);
+}
+
+.achievement span {
+	display: block;
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+.achievement-popup {
+	position: fixed;
+	top: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: var(--highlight-color);
+	padding: 15px;
+	border-radius: 10px;
+	box-shadow: var(--shadow);
+	animation: slideIn 0.5s ease-out;
+}
+
+.achievements-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+	padding: 10px;
+	background: rgba(255, 215, 0, 0.1);
+	border-radius: 8px;
+}
+
+.achievements-container::-webkit-scrollbar-thumb {
+	background: var(--highlight-color);
+	border-radius: 10px;
+}
+
+.achievements-list {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s ease-out;
+}
+
+.achievements-list.visible {
+	max-height: 400px;
+}
+
+.toggle-btn {
+	background: none;
+	border: none;
+	font-size: 1.2em;
+	padding: 0 8px;
+}
+
+.score-container,
+.shop-container,
+.reset-btn,
+.achievements-container {
+	pointer-events: auto;
+}
+
+@keyframes slideIn {
+	from {
+		transform: translateX(-50%) translateY(-100px);
+	}
+	to {
+		transform: translateX(-50%) translateY(0);
+	}
+}
+
+/* ======= Магазин улучшений ======= */
+.shop-container {
+	position: fixed;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: white;
+	padding: 15px;
+	border-radius: 10px;
+	box-shadow: var(--shadow);
+	width: 90%;
+	max-width: 400px;
+	z-index: 1000;
+	grid-area: shop;
+	justify-self: center;
+}
+
+/* ======= Кнопки улучшений ======= */
+.upgrade-btn {
+	display: block;
+	margin: 5px 0;
+	padding: 8px 12px;
+	background: var(--highlight-color);
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.upgrade-btn.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	background: var(--disabled-color);
+}
+
+/* ======= Кнопка сброса ======= */
+.reset-btn {
+	position: fixed;
+	bottom: 20px;
+	left: 20px;
+	padding: 10px 20px;
+	background-color: var(--danger-color);
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: transform 0.3s ease;
+	grid-area: reset-btn;
+	justify-self: start;
+	z-index: 999;
+}
+
+.reset-btn:hover {
+	transform: scale(1.05);
+}
+
+/* ======= Медиа-запросы для мобильных устройств ======= */
+@media (orientation: portrait) {
+	.ui-container {
+		grid-template:
+			'score      achievements' auto
+			'.          .' 1fr
+			'shop       shop' auto
+			'reset-btn  reset-btn' auto
+			/ 1fr 1fr;
+	}
+
+	.score-container {
+		top: 5px;
+		font-size: 18px;
+		padding: 6px 12px;
+		width: 90%;
+		text-align: center;
+	}
+
+	.shop-container {
+		width: 100%;
+		max-width: none;
+	}
+
+	.coin-container {
+		top: 35%;
+	}
+
+	.coin {
+		width: 100px;
+		height: 100px;
+	}
+
+	.reset-btn {
+		bottom: 10px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 90%;
+		max-width: 200px;
+		padding: 8px;
+		font-size: 14px;
+	}
+
+	.achievements-container {
+		top: 70px;
+		right: 10px;
+		left: 10px;
+		width: auto;
+		max-width: none;
+	}
+
+	.achievement {
+		padding: 8px;
+		font-size: 12px;
+	}
+
+	.achievement span {
+		font-size: 14px;
+	}
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 360px) {
+	.ui-container {
+		padding: 5px;
+		gap: 5px;
+	}
+
+	.achievements-header h2 {
+		font-size: 1.1em;
+	}
+
+	.score-container {
+		font-size: 16px;
+	}
+
+	.shop-container h2 {
+		font-size: 18px;
+		margin: 8px 0;
+	}
+
+	.upgrade-btn {
+		font-size: 13px;
+		padding: 6px 8px;
+	}
+}

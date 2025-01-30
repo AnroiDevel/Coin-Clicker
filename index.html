@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Coin Clicker</title>
+		<link rel="stylesheet" href="styles/main.css" />
+	</head>
+	<body>
+		<main>
+			<section class="game-area">
+				<div class="coin-container" id="coinContainer">
+					<img
+						src="assets/images/coin.png"
+						alt="Золотая монета"
+						id="coin"
+						class="coin"
+						draggable="false"
+					/>
+				</div>
+			</section>
+			<div class="ui-container"></div>
+			<header class="score-container" id="score-container">
+				Счет: <span id="score">0</span>
+			</header>
+			<section class="achievements-container">
+				<div class="achievements-header">
+					<h2>Достижения</h2>
+					<button class="toggle-btn">▲</button>
+				</div>
+				<div class="achievements-list" style="display: none"></div>
+			</section>
+			<section class="shop-container" id="shop">
+				<h2>Магазин улучшений</h2>
+				<article class="upgrades">
+					<button class="upgrade-btn disabled" data-upgrade="autoclicker">
+						Автокликер (<span class="price">50</span>)
+						<span class="count">0</span>
+					</button>
+					<button class="upgrade-btn" data-upgrade="multiplier">
+						Мультипликатор x2 (<span class="price">100</span>)
+						<span class="count">0</span>
+					</button>
+				</article>
+			</section>
+
+			<button id="reset-btn" class="reset-btn">Сбросить прогресс</button>
+			<div class="ui-container"></div>
+		</main>
+
+		<script type="module" src="scripts/main.js"></script>
+	</body>
+</html>
