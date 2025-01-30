@@ -12,9 +12,70 @@ export const GameState = {
 				multiplier: 2,
 			},
 		},
+		achievements: {
+			novice: {
+				unlocked: false,
+				title: 'Новичок',
+				description: 'Сделать 100 кликов',
+			},
+			investor: {
+				unlocked: false,
+				title: 'Инвестор',
+				description: 'Купить первое улучшение',
+			},
+			master: {
+				unlocked: false,
+				title: 'Мастер кликов',
+				description: 'Сделать 500 кликов',
+			},
+		},
 	},
 
 	init() {
+		this.load()
+		console.log('Игра загружена:', this.state)
+	},
+
+	getMultiplier() {
+		return this.state.upgrades.multiplier.count > 0
+			? Math.pow(2, this.state.upgrades.multiplier.count)
+			: 1
+	},
+
+	updateScore(amount) {
+		this.state.score += amount
+		console.log(`Очки обновлены: ${this.state.score}`)
+		this.save()
+		EventBus.dispatchEvent(
+			new CustomEvent('scoreUpdated', { detail: this.state.score })
+		)
+	},
+
+	save() {
+		try {
+			localStorage.setItem('coinClickerSave', JSON.stringify(this.state))
+		} catch (error) {
+			console.error('Ошибка сохранения в localStorage:', error)
+		}
+	},
+
+	load() {
+		try {
+			const saved = localStorage.getItem('coinClickerSave')
+			if (saved) {
+				this.state = JSON.parse(saved)
+				console.log('🔄 Данные загружены:', this.state)
+			}
+		} catch (error) {
+			console.error('Ошибка загрузки из localStorage:', error)
+		}
+		EventBus.dispatchEvent(
+			new CustomEvent('scoreUpdated', { detail: this.state.score })
+		)
+	},
+
+	reset() {
+		console.log('🔄 Сброс прогресса...')
 		this.state = {
 			score: 0,
 			upgrades: {
@@ -47,54 +108,8 @@ export const GameState = {
 				},
 			},
 		}
-	},
 
-	getMultiplier() {
-		return this.state.upgrades.multiplier.count > 0
-			? Math.pow(2, this.state.upgrades.multiplier.count)
-			: 1
-	},
-
-	save() {
-		localStorage.setItem('coinClickerSave', JSON.stringify(this.state))
-	},
-
-	load() {
-		const saved = localStorage.getItem('coinClickerSave')
-		if (!saved) return
-
-		try {
-			const loaded = JSON.parse(saved)
-			this.state = {
-				...this.state,
-				...loaded,
-				upgrades: this.mergeState(this.state.upgrades, loaded.upgrades),
-				achievements: this.mergeState(
-					this.state.achievements,
-					loaded.achievements
-				),
-			}
-		} catch (error) {
-			console.error('Ошибка загрузки:', error)
-		}
-	},
-
-	mergeState(base, loaded) {
-		return Object.fromEntries(
-			Object.entries(base).map(([key, val]) => [
-				key,
-				{ ...val, ...(loaded?.[key] || {}) },
-			])
-		)
-	},
-
-	updateScore(amount) {
-		this.state.score += amount
-		console.log(`Очки обновлены: ${this.state.score}`)
-		EventBus.dispatchEvent(
-			new CustomEvent('scoreUpdated', { detail: this.state.score })
-		)
-		EventBus.dispatchEvent(new Event('updateShop'))
 		this.save()
+		EventBus.dispatchEvent(new Event('resetProgress'))
 	},
 }
